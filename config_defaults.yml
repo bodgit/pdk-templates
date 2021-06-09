@@ -630,18 +630,3 @@ spec/spec_helper.rb:
   mock_with: ":rspec"
   strict_level: ":warning"
   strict_variables: true
-
-.github/workflows/nightly.yml:
-  unmanaged: true
-  slack-notifications:
-    channel: '#team-ia-bots'
-    name: 'GABot'
-.github/workflows/pr_test.yml:
-  unmanaged: true
-.github/workflows/auto_release.yml:
-  unmanaged: true
-.github/workflows/spec.yml:
-  unmanaged: true
-  checks: 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop'
-.github/workflows/release.yml:
-  unmanaged: true
