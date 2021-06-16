@@ -18,29 +18,43 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+<% if @configs['before_ruby'] -%>
+      - name: Before Ruby
+        run: |
+<%   @configs['before_ruby'].each do |run| -%>
+          <%= run %>
+<%   end -%>
+<% end -%>
       - name: Activate Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
           bundler-cache: true
       - name: Run static & syntax tests
-        run: bundle exec rake check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint
+        run: |
+          bundle exec rake check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint
   spec:
     name: 'Spec tests (Puppet: ${{ matrix.puppet_gem_version }}, Ruby: ${{ matrix.ruby }})'
     strategy:
       fail-fast: false
       matrix:
         include:
-          - ruby: 2.4.10
-            puppet_gem_version: ~> 5.0
-          - ruby: 2.5.7
-            puppet_gem_version: ~> 6.0
-          - ruby: 2.7.2
-            puppet_gem_version: ~> 7.0
+<% @configs['includes'].each do |job| -%>
+<%   job.keys.sort.each_with_index do |key, i| -%>
+          <%= i == 0 ? '-' : ' ' %> <%= key %>: <%= job[key] %>
+<%   end -%>
+<% end -%>
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+<% if @configs['before_ruby'] -%>
+      - name: Before Ruby
+        run: |
+<%   @configs['before_ruby'].each do |run| -%>
+          <%= run %>
+<%   end -%>
+<% end -%>
       - name: Activate Ruby
         uses: ruby/setup-ruby@v1
         env:
@@ -49,9 +63,12 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: Run parallel_spec tests
-        run: bundle exec rake parallel_spec
+        run: |
+          bundle exec rake parallel_spec
+<% if @configs['simplecov'] -%>
         env:
           SIMPLECOV: yes
+<% end -%>
   release:
     name: Create release
     needs:
